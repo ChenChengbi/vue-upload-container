@@ -19,16 +19,26 @@ import UploadAxios from "../api/upload-axios.js";
 export default {
   props: {
     disabled: { type: Boolean, default: false }, // 是否不可用
-    autoUpload: { type: Boolean, default: true }, // 是否选好文件后就自动上传
+    action: { type: String, required: true }, // 上传文件的地址
     multiple: { type: Boolean, default: false }, // file类型input的原生属性，是否允许多选文件
+    fileName: { type: String, default: "file" }, // 文件对象对应的表单字段名
     limit: { type: Number }, // 同一时间上传文件的个数限制
     accept: { type: String }, // 限制可接受的文件类型，参考：https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/Input/file#%E9%99%90%E5%88%B6%E5%8F%AF%E6%8E%A5%E5%8F%97%E7%9A%84%E6%96%87%E4%BB%B6%E7%B1%BB%E5%9E%8B
-    action: { type: String, required: true }, // 上传文件的地址
-    uploadName: { type: String, default: "file" }, // 文件对象的属性名
+    autoUpload: { type: Boolean, default: true }, // 是否选好文件后就自动上传
     // 上传时附带的额外参数
-    extraData: { type: Object, default: () => {} },
+    extraData: {
+      type: Object,
+      default: () => {
+        return {};
+      },
+    },
     // 设置上传的请求头部
-    headers: { type: Object, default: () => {} },
+    headers: {
+      type: Object,
+      default: () => {
+        return {};
+      },
+    },
     // 注：文件大小 和 文件名 都是本组件从文件对象中读取的
     fileSizeAttrName: String, // 文件大小 字段对应的字段名（如果不传，则每个文件的大小不会上传服务器）
     fileNameAttrName: String, // 文件名 字段对应的字段名（如果不传，则每个文件的文件名不会上传服务器）
@@ -165,7 +175,7 @@ export default {
         onSuccess: this.onSuccess,
         onProgress: this.onProgress,
         onError: this.onError,
-        fileAttrName: this.uploadName,
+        fileAttrName: this.fileName,
         // postOrPut: this.postOrPut,
       });
     },
