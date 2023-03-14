@@ -15,7 +15,7 @@
   "browser": {
     "./sfc": "src/components/upload-container.vue"
   },
-  "type": "module",
+
   "private": false,
   "files": [
     "dist/*"

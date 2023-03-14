@@ -1,9 +1,14 @@
 <template>
   <div class="home">
     <UploadContainer
+      v-slot="{ fileList, currFile }"
       :action="uploadUrl"
       :headers="{ Token: token }"
       :fileName="'icon'"
+      :multiple="true"
+      :limit="2"
+      :maxSize="1024 * 100"
+      :minSize="1024 * 10"
       :beforeSelectFile="beforeSelectFile"
       :beforeUploadAll="beforeUploadAll"
       :beforeUpload="beforeUpload"
@@ -12,11 +17,19 @@
       :onSuccess="onSuccess"
       :onProgress="onProgress"
       :onError="onError"
-      :onExceed="onExceed"
+      :onExceedLimit="onExceedLimit"
+      :onExceedMinSize="onExceedMinSize"
+      :onExceedMaxSize="onExceedMaxSize"
     >
       <div class="img-container">
         <img :src="previewUrl" />
       </div>
+      <div class="file-list">
+        <div v-for="file in fileList" :key="file.name">
+          {{ file.name }}
+        </div>
+      </div>
+      <div class="curr-file">{{ currFile.name }}</div>
     </UploadContainer>
   </div>
 </template>
@@ -59,8 +72,14 @@ export default {
     onError(err, file, extraData) {
       console.log("onError");
     },
-    onExceed(files) {
-      console.log("onExceed");
+    onExceedLimit(files) {
+      console.log("onExceedLimit");
+    },
+    onExceedMinSize(files) {
+      console.log("onExceedMinSize");
+    },
+    onExceedMaxSize(files) {
+      console.log("onExceedMaxSize");
     },
   },
 };

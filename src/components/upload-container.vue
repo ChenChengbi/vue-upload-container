@@ -1,7 +1,7 @@
 <template>
   <div class="upload-btn">
     <div class="upload" @click.stop="handleBtnFileUpload">
-      <slot></slot>
+      <slot v-bind="{ fileList, currFile }"></slot>
     </div>
     <input
       type="file"
@@ -16,13 +16,25 @@
 <script>
 import UploadAxios from "../api/upload-axios.js";
 
+class FileEntity {
+  constructor({ name, size, type, percent = 0, originalFile }) {
+    this.name = name;
+    this.size = size;
+    this.type = type;
+    this.percent = percent;
+    this.originalFile = originalFile;
+  }
+}
+
 export default {
   props: {
     disabled: { type: Boolean, default: false }, // 是否不可用
     action: { type: String, required: true }, // 上传文件的地址
     multiple: { type: Boolean, default: false }, // file类型input的原生属性，是否允许多选文件
     fileName: { type: String, default: "file" }, // 文件对象对应的表单字段名
-    limit: { type: Number }, // 同一时间上传文件的个数限制
+    limit: { type: Number, default: Infinity }, // 同一时间上传文件的个数限制
+    minSize: { type: Number, default: 0 }, // 文件的最小大小
+    maxSize: { type: Number, default: Infinity }, // 文件的最大大小
     accept: { type: String }, // 限制可接受的文件类型，参考：https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/Input/file#%E9%99%90%E5%88%B6%E5%8F%AF%E6%8E%A5%E5%8F%97%E7%9A%84%E6%96%87%E4%BB%B6%E7%B1%BB%E5%9E%8B
     autoUpload: { type: Boolean, default: true }, // 是否选好文件后就自动上传
     // 上传时附带的额外参数
@@ -51,29 +63,33 @@ export default {
     onSuccess: Function, // 单个文件上传成功时的钩子，参数：result, file, extraData
     onProgress: Function, // 单个文件上传的进度钩子(上传过程中不断触发)，参数：file, {percent, total}, extraData
     onError: Function, // 单个文件上传错误时的钩子，参数：err, file, extraData
-    onExceed: Function, // 超过上传文件的个数限制时的钩子，参数：files
+    onExceedLimit: Function, // 超过上传文件的个数限制时的钩子，参数：files
+    onExceedMinSize: Function, // 某个文件大小小于文件最小限制时的钩子，参数：files
+    onExceedMaxSize: Function, // 某个文件大小大于文件最大限制时的钩子，参数：files
   },
   data() {
     return {
-      fileInput: null,
+      refFileInput: null,
+      fileList: [],
+      currFile: {},
     };
   },
   mounted() {
-    this.fileInput = this.$refs["resource"];
-    this.fileInput.style.display = "none";
+    this.refFileInput = this.$refs["resource"];
+    this.refFileInput.style.display = "none";
   },
   methods: {
     SetFiles(files) {
-      if (this.fileInput) {
-        this.fileInput.files = files;
+      if (this.refFileInput) {
+        this.refFileInput.files = files;
       } else {
-        throw new Error("fileInput 未初始化");
+        throw new Error("refFileInput 未初始化");
       }
     },
 
     // 清空选择的所有文件(恢复input的初始状态，目的是使onChange事件在选择同一文件时也会触发)
     ClearFiles() {
-      this.fileInput.value = null;
+      this.refFileInput.value = null;
     },
 
     // 上传按钮被物理点击时的回调
@@ -81,14 +97,27 @@ export default {
       if (!this.disabled) {
         const result = await this.beforeSelectFile();
         if (result !== false) {
-          this.fileInput && this.fileInput.click();
+          this.refFileInput && this.refFileInput.click();
         }
       }
     },
 
     // 选择要上传的文件时的回调
     handleFileInputChange(event) {
-      let files = event.target.files;
+      const files = event.target.files;
+
+      this.fileList = []; // 先清空之前的选择
+      for (const file of files) {
+        this.fileList.push(
+          new FileEntity({
+            name: file.name,
+            size: file.size,
+            type: file.type,
+            originalFile: file,
+          })
+        );
+      }
+
       this.onChange && this.onChange(files);
       if (this.autoUpload) {
         this.upload(files);
@@ -97,7 +126,7 @@ export default {
 
     // 上传文件
     upload(files) {
-      let _files = files ? files : this.fileInput.files;
+      const _files = files ? files : this.refFileInput.files;
       if (this.beforeUploadAll) {
         const beforeAll = this.beforeUploadAll(_files);
         if (beforeAll && beforeAll.then) {
@@ -122,6 +151,34 @@ export default {
      * @param {Array.<File>} files 表单文件对象数组
      */
     $$_upload(files) {
+      // 检测文件数量是否超出上限
+      if (this.limit && this.limit > 0) {
+        if (files.length > this.limit) {
+          this.onExceedLimit && this.onExceedLimit(files);
+          return;
+        }
+      }
+
+      // 检测是否有文件大小小于最小限定
+      if (this.minSize) {
+        for (const file of files) {
+          if (file.size < this.minSize) {
+            this.onExceedMinSize && this.onExceedMinSize(files);
+            return;
+          }
+        }
+      }
+
+      // 检测是否有文件大小大于最大限定
+      if (this.maxSize) {
+        for (const file of files) {
+          if (file.size > this.maxSize) {
+            this.onExceedMinSize && this.onExceedMaxSize(files);
+            return;
+          }
+        }
+      }
+
       if (this.beforeUpload) {
         for (const file of files) {
           const before = this.beforeUpload(file, files);
@@ -150,13 +207,6 @@ export default {
      * @returns {Function} 用于中止上传的函数
      */
     $_upload(file, files, moreExtraData) {
-      if (this.limit && this.limit > 0) {
-        if (files.length > this.limit) {
-          this.onExceed && this.onExceed(files);
-          return;
-        }
-      }
-
       let extraData = JSON.parse(JSON.stringify(this.extraData));
       extraData = { ...extraData, ...moreExtraData };
 
@@ -164,6 +214,13 @@ export default {
       if (this.fileNameAttrName) extraData[this.fileNameAttrName] = file.name;
 
       // let slicedBlob = file.slice(start);
+
+      this.currFile = new FileEntity({
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        originalFile: file,
+      });
 
       return UploadAxios.upload({
         url: this.action,
@@ -173,7 +230,10 @@ export default {
         headers: this.headers,
         onBegin: this.onBegin,
         onSuccess: this.onSuccess,
-        onProgress: this.onProgress,
+        onProgress: function (file, { percent, total }, extraData) {
+          this.currFile.percent = percent;
+          this.onProgress(file, { percent, total }, extraData);
+        },
         onError: this.onError,
         fileAttrName: this.fileName,
         // postOrPut: this.postOrPut,
