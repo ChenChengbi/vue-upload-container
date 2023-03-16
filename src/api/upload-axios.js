@@ -1,3 +1,10 @@
+/*
+ * @Author: Billy
+ * @Date: 2023-03-10 11:03:07
+ * @LastEditors: Billy
+ * @LastEditTime: 2023-03-16 16:53:14
+ * @Description: 请输入
+ */
 import axios from "axios";
 
 const UPLOAD_TIMEOUT = 0;
@@ -70,10 +77,11 @@ function upload({
     }).then((res) => {
         onSuccess && onSuccess(res.data.result, file, extraData)
     }).catch(err => {
+        cancel();
         onError && onError(err, file, extraData);
     });
 
-    return cancel;
+    // return cancel;
 }
 
 export default {

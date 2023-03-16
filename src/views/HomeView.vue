@@ -1,35 +1,28 @@
 <template>
   <div class="home">
     <UploadContainer
-      v-slot="{ fileList, currFile }"
       :action="uploadUrl"
       :headers="{ Token: token }"
       :fileName="'icon'"
-      :multiple="true"
-      :limit="2"
-      :maxSize="1024 * 100"
+      :limit="1"
+      :maxSize="1024 * 1024"
       :minSize="1024 * 10"
       :beforeSelectFile="beforeSelectFile"
       :beforeUploadAll="beforeUploadAll"
       :beforeUpload="beforeUpload"
-      :onBegin="onBegin"
-      :onChange="onChange"
-      :onSuccess="onSuccess"
-      :onProgress="onProgress"
-      :onError="onError"
       :onExceedLimit="onExceedLimit"
       :onExceedMinSize="onExceedMinSize"
       :onExceedMaxSize="onExceedMaxSize"
+      :onChange="onChange"
+      :onBegin="onBegin"
+      :onProgress="onProgress"
+      :onSuccess="onSuccess"
+      :onError="onError"
     >
-      <div class="img-container">
-        <img :src="previewUrl" />
-      </div>
-      <div class="file-list">
-        <div v-for="file in fileList" :key="file.name">
-          {{ file.name }}
-        </div>
-      </div>
-      <div class="curr-file">{{ currFile.name }}</div>
+      <div
+        class="img-area"
+        :style="{ 'background-image': `url(${previewUrl})` }"
+      ></div>
     </UploadContainer>
   </div>
 </template>
@@ -52,45 +45,46 @@ export default {
       console.log("beforeSelectFile");
     },
     beforeUploadAll(files) {
-      console.log("beforeUploadAll");
+      console.log("beforeUploadAll >> ", files);
     },
     beforeUpload(file, files) {
-      console.log("beforeUpload");
-    },
-    onBegin(file, cancel, extraData) {
-      console.log("onBegin");
-    },
-    onChange(files) {
-      console.log("onChange");
-    },
-    onSuccess(result, file, extraData) {
-      console.log("onSuccess");
-    },
-    onProgress(file, { percent, total }, extraData) {
-      console.log("onProgress");
-    },
-    onError(err, file, extraData) {
-      console.log("onError");
+      console.log("beforeUpload >> ", file, files);
     },
     onExceedLimit(files) {
-      console.log("onExceedLimit");
+      console.log("onExceedLimit >> ", files);
     },
     onExceedMinSize(files) {
-      console.log("onExceedMinSize");
+      console.log("onExceedMinSize >> ", files);
     },
     onExceedMaxSize(files) {
-      console.log("onExceedMaxSize");
+      console.log("onExceedMaxSize >> ", files);
+    },
+    onChange(files) {
+      console.log("onChange >> ", files);
+    },
+    onBegin(file, cancel, extraData) {
+      console.log("onBegin >> ", file, cancel, extraData);
+    },
+    onProgress(file, { percent, total }, extraData) {
+      console.log("onProgress >> ", file, { percent, total }, extraData);
+    },
+    onSuccess(result, file, extraData) {
+      console.log("onSuccess >> ", result, file, extraData);
+    },
+    onError(err, file, extraData) {
+      console.log("onError >> ", err, file, extraData);
     },
   },
 };
 </script>
 <style lang="scss" scoped>
 .home {
-  .img-container {
-    width: 200px;
-    img {
-      width: 100%;
-    }
+  .img-area {
+    width: 100px;
+    height: 100px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
   }
 }
 </style>
