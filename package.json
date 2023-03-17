@@ -9,6 +9,8 @@
   ],
   "author": "Billy Chen",
   "license": "MIT",
+  "homepage": "https://gitee.com/bi2008/vue-upload-container",
+  "repository": "https://gitee.com/bi2008/vue-upload-container",
   "main": "dist/upload-container.umd.js",
   "module": "dist/upload-container.esm.js",
   "unpkg": "dist/upload-container.min.js",
