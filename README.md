@@ -1,11 +1,3 @@
-<!--
- * @Author: Billy
- * @Date: 2023-03-10 10:12:59
- * @LastEditors: Billy
- * @LastEditTime: 2023-03-16 21:40:12
- * @Description: 请输入
--->
-
 # Vue Upload Container
 
 > 基于 Vue 的文件上传容器
@@ -17,6 +9,9 @@ $ npm i vue-upload-container -S
 ```
 
 ## 🔨 使用
+
+> 下面展示点击图片，弹窗选择新图片上传，替换原图片
+
 ```html
 <template>
   <div class="home">
@@ -65,16 +60,16 @@ $ npm i vue-upload-container -S
 
 
 ## 🔠 钩子属性
-| 属性名           | 参数        | 说明                                                                                                                              |
-|------------------|-------------|-----------------------------------------------------------------------------------------------------------------------------------|
-| beforeSelectFile | -           | 选择上传文件之前的钩子，返回 false 将不再弹窗选择文件                                                                             |
-| beforeUploadAll  | files       | 上传所有文件之前的钩子，返回 false 将会中止所有文件上传                                                                           |
-| beforeUpload     | file, files | 上传单个文件之前的钩子，返回 false 将会中止单个文件上传，返回非 false 则正常上传，并且如果返回对象则对象本身会追加到 extraData 中 |
-| onExceedLimit    |             |                                                                                                                                   |
-| onExceedMinSize  |             |                                                                                                                                   |
-| onExceedMaxSize  |             |                                                                                                                                   |
-| onChange         |             |                                                                                                                                   |
-| onBegin          |             |                                                                                                                                   |
-| onProgress       |             |                                                                                                                                   |
-| onSuccess        |             |                                                                                                                                   |
-| onError          |             |                                                                                                                                   |
+| 属性名           | 参数                              | 说明                                                                                                          |
+|------------------|-----------------------------------|---------------------------------------------------------------------------------------------------------------|
+| beforeSelectFile | -                                 | 选择文件之前的钩子，返回 false 将不再弹窗选择文件                                                             |
+| beforeUploadAll  | files                             | 上传所有文件之前的钩子，返回 false 将会中止所有文件上传                                                       |
+| beforeUpload     | file, files                       | 上传单个文件之前的钩子，返回 false 将会中止单个文件上传；如果返回对象则对象本身会追加到 extraData 中          |
+| onExceedLimit    | files                             | 超过上传文件的个数限制时的钩子                                                                                |
+| onExceedMinSize  | files                             | 某个文件尺寸小于文件最小限制时的钩子                                                                          |
+| onExceedMaxSize  | files                             | 某个文件尺寸大于文件最大限制时的钩子                                                                          |
+| onChange         | files                             | 选择文件后的钩子                                                                                              |
+| onBegin          | file, cancel, extraData           | 开始上传单个文件时的钩子，后于 beforeUpload，文件必定会开始上传；参数 cancel 为函数，调用 cancel() 会中止上传 |
+| onProgress       | file, {percent, total}, extraData | 单个文件上传的进度钩子(上传过程中不断触发)                                                                    |
+| onSuccess        | result, file, extraData           | 单个文件上传成功时的钩子                                                                                      |
+| onError          | err, file, extraData              | 单个文件上传错误时的钩子                                                                                      |
