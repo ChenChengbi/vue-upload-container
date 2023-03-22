@@ -44,6 +44,10 @@ $ npm i vue-upload-container -S
 ...
 ```
 
+## 📷 效果图
+
+![效果图1](https://raw.githubusercontent.com/ChenChengbi/screen-shots/main/vue-upload-container/vue-upload-container-screenshot-1.gif)
+
 ## 🔠 属性
 | 属性名     | 类型    | 默认值   | 说明                       |
 |------------|---------|----------|----------------------------|
