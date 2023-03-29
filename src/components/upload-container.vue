@@ -2,7 +2,7 @@
  * @Author: Billy
  * @Date: 2023-03-10 11:03:23
  * @LastEditors: Billy
- * @LastEditTime: 2023-03-16 21:51:30
+ * @LastEditTime: 2023-03-29 15:19:32
  * @Description: 请输入
 -->
 
@@ -96,17 +96,38 @@ export default {
     this.refFileInput.style.display = "none";
   },
   methods: {
-    SetFiles(files) {
-      if (this.refFileInput) {
-        this.refFileInput.files = files;
+    // 上传文件
+    Upload() {
+      if (this.beforeUploadAll) {
+        const beforeAll = this.beforeUploadAll(this.fileList);
+        if (beforeAll && beforeAll.then) {
+          beforeAll.then((result) => {
+            if (result !== false) {
+              this.uploadFiles(this.fileList);
+            }
+          });
+          // .catch((err) => {
+          //   // console.log("err :>> ", err);
+          // });
+        } else if (beforeAll !== false) {
+          this.uploadFiles(this.fileList);
+        }
       } else {
-        throw new Error("refFileInput 未初始化");
+        this.uploadFiles(this.fileList);
       }
     },
 
     // 清空选择的所有文件(恢复input的初始状态，目的是使onChange事件在选择同一文件时也会触发)
     ClearFiles() {
       this.refFileInput.value = null;
+    },
+
+    SetFiles(files) {
+      if (this.refFileInput) {
+        this.refFileInput.files = files;
+      } else {
+        throw new Error("refFileInput 未初始化");
+      }
     },
 
     // 上传按钮被物理点击时的回调
@@ -134,7 +155,7 @@ export default {
 
       this.onChange && this.onChange(this.fileList);
       if (this.autoUpload) {
-        this.upload();
+        this.Upload();
       }
     },
 
@@ -145,27 +166,6 @@ export default {
         mimeType: file.type,
         rawFile: file,
       });
-    },
-
-    // 上传文件
-    upload() {
-      if (this.beforeUploadAll) {
-        const beforeAll = this.beforeUploadAll(this.fileList);
-        if (beforeAll && beforeAll.then) {
-          beforeAll.then((result) => {
-            if (result !== false) {
-              this.uploadFiles(this.fileList);
-            }
-          });
-          // .catch((err) => {
-          //   // console.log("err :>> ", err);
-          // });
-        } else if (beforeAll !== false) {
-          this.uploadFiles(this.fileList);
-        }
-      } else {
-        this.uploadFiles(this.fileList);
-      }
     },
 
     /**
