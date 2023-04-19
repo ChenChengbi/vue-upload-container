@@ -2,7 +2,7 @@
  * @Author: Billy
  * @Date: 2023-03-10 11:03:23
  * @LastEditors: Billy
- * @LastEditTime: 2023-03-29 15:19:32
+ * @LastEditTime: 2023-04-19 18:25:09
  * @Description: 请输入
 -->
 
@@ -119,15 +119,17 @@ export default {
 
     // 清空选择的所有文件(恢复input的初始状态，目的是使onChange事件在选择同一文件时也会触发)
     ClearFiles() {
-      this.refFileInput.value = null;
+      // this.refFileInput.value = null;
+      this.fileList = [];
     },
 
     SetFiles(files) {
-      if (this.refFileInput) {
-        this.refFileInput.files = files;
-      } else {
-        throw new Error("refFileInput 未初始化");
-      }
+      // if (this.refFileInput) {
+      //   this.refFileInput.files = files;
+      // } else {
+      //   throw new Error("refFileInput 未初始化");
+      // }
+      this.fileList = files.map((file) => this.rawToFileEntity(file));
     },
 
     // 上传按钮被物理点击时的回调

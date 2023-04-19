@@ -8,6 +8,10 @@ const routes = [{
   path: '/',
   name: 'home',
   component: HomeView
+}, {
+  path: '/async-upload',
+  name: 'async-upload',
+  component: () => import( /* webpackChunkName: "AsyncUpload" */ '../views/AsyncUpload.vue')
 }, ]
 
 const router = new VueRouter({
