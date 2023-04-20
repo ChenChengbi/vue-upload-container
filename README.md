@@ -1,10 +1,3 @@
-<!--
- * @Author: Billy
- * @Date: 2023-03-10 10:12:59
- * @LastEditors: Billy
- * @LastEditTime: 2023-04-20 09:12:34
- * @Description: 请输入
--->
 # Vue Upload Container
 
 > 基于 Vue 的文件上传容器
