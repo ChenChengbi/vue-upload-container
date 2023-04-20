@@ -2,7 +2,7 @@
  * @Author: Billy
  * @Date: 2023-04-19 17:00:25
  * @LastEditors: Billy
- * @LastEditTime: 2023-04-20 09:31:48
+ * @LastEditTime: 2023-04-20 14:44:20
  * @Description: 请输入
 -->
 <template>
@@ -19,6 +19,9 @@
         <span>选择文件</span>
       </div>
     </UploadContainer>
+    <div class="btn btn-clear" @click="onBtnClearClick">
+      <span>清空</span>
+    </div>
     <div class="btn btn-upload" @click="onBtnUploadClick">
       <span>上传</span>
     </div>
@@ -46,11 +49,14 @@ export default {
   methods: {
     onChange(files) {
       this.files = files;
+      const rawFiles = this.files.map((f) => f.rawFile);
+      this.$refs["UploadContainer"].SetFiles(rawFiles);
+    },
+    onBtnClearClick() {
+      this.$refs["UploadContainer"].ClearFiles();
     },
     onBtnUploadClick() {
       if (this.files && this.files.length > 0) {
-        const rawFiles = this.files.map((f) => f.rawFile);
-        this.$refs["UploadContainer"].SetFiles(rawFiles);
         this.$refs["UploadContainer"].Upload();
       }
     },
@@ -68,7 +74,8 @@ export default {
     background-color: blue;
     text-align: center;
 
-    &.btn-upload {
+    &.btn-upload,
+    &.btn-clear {
       margin-top: 32px;
       cursor: pointer;
     }
