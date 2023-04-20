@@ -1,3 +1,10 @@
+<!--
+ * @Author: Billy
+ * @Date: 2023-04-19 17:00:25
+ * @LastEditors: Billy
+ * @LastEditTime: 2023-04-20 09:31:48
+ * @Description: 请输入
+-->
 <template>
   <div class="async-upload">
     <UploadContainer
@@ -16,7 +23,11 @@
       <span>上传</span>
     </div>
 
-    <div class="file-area"></div>
+    <div class="file-area">
+      <div v-for="(f, i) in files" :key="i">
+        <span>{{ f.name }}</span>
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -28,7 +39,7 @@ export default {
       uploadUrl: "http://220.168.85.72:10910/enterprise/upload-icon",
       // previewUrl: "http://220.168.85.72:10910/enterprise/find-icon",
       token:
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjEsInJvbGVzIjpbMCwyLDMsNywxMV0sImF1dGhzIjpbWyJBVVRIIiwiUk9MRSIsIlVTRVIiXSxbIkFVVEgiLCJST0xFIl0sWyJBVVRIIiwiUk9MRSJdLFtdLFtdXSwiaWF0IjoxNjgxODk3NDM3LCJleHAiOjE2ODE5MTkwMzd9.V8PU0BRxWhX2yDgQfr3UpIWEN5VUHmhe7kBF1Ion0ME",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjEsInJvbGVzIjpbMCwyLDMsNywxMV0sImF1dGhzIjpbWyJBVVRIIiwiUk9MRSIsIlVTRVIiXSxbIkFVVEgiLCJST0xFIl0sWyJBVVRIIiwiUk9MRSJdLFtdLFtdXSwiaWF0IjoxNjgxOTU0MjgwLCJleHAiOjE2ODE5NzU4ODB9.XGisKZPlzmTD4wpDZFgq_0ugKfm5lZ1rvwK6YcBgieI",
       files: [],
     };
   },
@@ -38,9 +49,8 @@ export default {
     },
     onBtnUploadClick() {
       if (this.files && this.files.length > 0) {
-        this.$refs["UploadContainer"].SetFiles(
-          this.files.map((f) => f.rawFile)
-        );
+        const rawFiles = this.files.map((f) => f.rawFile);
+        this.$refs["UploadContainer"].SetFiles(rawFiles);
         this.$refs["UploadContainer"].Upload();
       }
     },
@@ -49,16 +59,23 @@ export default {
 </script>
 <style lang="scss" scoped>
 .async-upload {
+  padding: 32px;
   .btn {
     width: 120px;
     height: 32px;
     line-height: 32px;
     color: white;
     background-color: blue;
+    text-align: center;
 
     &.btn-upload {
       margin-top: 32px;
+      cursor: pointer;
     }
+  }
+
+  .file-area {
+    margin-top: 32px;
   }
 }
 </style>

@@ -2,7 +2,7 @@
  * @Author: Billy
  * @Date: 2023-03-10 11:03:23
  * @LastEditors: Billy
- * @LastEditTime: 2023-04-19 18:25:09
+ * @LastEditTime: 2023-04-20 09:30:01
  * @Description: 请输入
 -->
 
@@ -98,7 +98,7 @@ export default {
   methods: {
     // 上传文件
     Upload() {
-      if (this.beforeUploadAll) {
+      if (this.beforeUploadAll instanceof Function) {
         const beforeAll = this.beforeUploadAll(this.fileList);
         if (beforeAll && beforeAll.then) {
           beforeAll.then((result) => {
@@ -119,23 +119,26 @@ export default {
 
     // 清空选择的所有文件(恢复input的初始状态，目的是使onChange事件在选择同一文件时也会触发)
     ClearFiles() {
-      // this.refFileInput.value = null;
       this.fileList = [];
     },
 
     SetFiles(files) {
-      // if (this.refFileInput) {
-      //   this.refFileInput.files = files;
-      // } else {
-      //   throw new Error("refFileInput 未初始化");
-      // }
-      this.fileList = files.map((file) => this.rawToFileEntity(file));
+      if (Array.isArray(files)) {
+        const result = files.every((file) => file instanceof File);
+        if (result) {
+          this.fileList = files.map((file) => this.rawToFileEntity(file));
+        } else {
+          throw new Error("数组内有至少一个非浏览器内置 File 类型对象");
+        }
+      } else {
+        throw new Error("请传递数组");
+      }
     },
 
     // 上传按钮被物理点击时的回调
     async handleBtnFileUpload() {
       if (!this.disabled) {
-        if (this.beforeSelectFile) {
+        if (this.beforeSelectFile instanceof Function) {
           const result = await this.beforeSelectFile();
           if (result !== false) {
             this.refFileInput && this.refFileInput.click();
@@ -155,7 +158,7 @@ export default {
         this.fileList.push(this.rawToFileEntity(file));
       }
 
-      this.onChange && this.onChange(this.fileList);
+      this.onChange instanceof Function && this.onChange(this.fileList);
       if (this.autoUpload) {
         this.Upload();
       }
@@ -178,7 +181,7 @@ export default {
       // 检测文件数量是否超出上限
       if (this.limit && this.limit > 0) {
         if (files.length > this.limit) {
-          this.onExceedLimit && this.onExceedLimit(files);
+          this.onExceedLimit instanceof Function && this.onExceedLimit(files);
           return;
         }
       }
@@ -187,7 +190,8 @@ export default {
       if (this.minSize) {
         for (const file of files) {
           if (file.size < this.minSize) {
-            this.onExceedMinSize && this.onExceedMinSize(files);
+            this.onExceedMinSize instanceof Function &&
+              this.onExceedMinSize(files);
             return;
           }
         }
@@ -197,13 +201,14 @@ export default {
       if (this.maxSize) {
         for (const file of files) {
           if (file.size > this.maxSize) {
-            this.onExceedMinSize && this.onExceedMaxSize(files);
+            this.onExceedMinSize instanceof Function &&
+              this.onExceedMaxSize(files);
             return;
           }
         }
       }
 
-      if (this.beforeUpload) {
+      if (this.beforeUpload instanceof Function) {
         for (const file of files) {
           const before = this.beforeUpload(file, files);
           if (before && before.then) {
@@ -243,17 +248,23 @@ export default {
         extraData,
         headers: this.headers,
         onBegin: (rawFile, cancel, extraData) => {
-          this.onBegin(file, cancel, extraData);
+          if (this.onBegin instanceof Function)
+            this.onBegin(file, cancel, extraData);
         },
         onSuccess: (result, rawFile, extraData) => {
-          this.onSuccess(result, file, extraData);
+          if (this.onSuccess instanceof Function)
+            this.onSuccess(result, file, extraData);
         },
         onProgress: (rawFile, { percent, total }, extraData) => {
-          this.onProgress(file, { percent, total }, extraData);
-          file.percent = percent;
+          if (this.onProgress instanceof Function) {
+            this.onProgress(file, { percent, total }, extraData);
+            file.percent = percent;
+          }
         },
         onError: (err, rawFile, extraData) => {
-          this.onError(err, file, extraData);
+          if (this.onError instanceof Function) {
+            this.onError(err, file, extraData);
+          }
         },
         fileAttrName: this.fileName,
       });
