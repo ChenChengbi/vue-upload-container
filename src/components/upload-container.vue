@@ -2,7 +2,7 @@
  * @Author: Billy
  * @Date: 2023-03-10 11:03:23
  * @LastEditors: Billy
- * @LastEditTime: 2023-04-20 09:30:01
+ * @LastEditTime: 2023-04-27 17:30:17
  * @Description: 请输入
 -->
 
@@ -119,6 +119,7 @@ export default {
 
     // 清空选择的所有文件(恢复input的初始状态，目的是使onChange事件在选择同一文件时也会触发)
     ClearFiles() {
+      this.refFileInput.value = null;
       this.fileList = [];
     },
 

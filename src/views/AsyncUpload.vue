@@ -2,7 +2,7 @@
  * @Author: Billy
  * @Date: 2023-04-19 17:00:25
  * @LastEditors: Billy
- * @LastEditTime: 2023-04-20 14:44:20
+ * @LastEditTime: 2023-04-27 17:29:44
  * @Description: 请输入
 -->
 <template>
@@ -48,11 +48,13 @@ export default {
   },
   methods: {
     onChange(files) {
+      console.log("onChange");
       this.files = files;
       const rawFiles = this.files.map((f) => f.rawFile);
       this.$refs["UploadContainer"].SetFiles(rawFiles);
     },
     onBtnClearClick() {
+      this.files = [];
       this.$refs["UploadContainer"].ClearFiles();
     },
     onBtnUploadClick() {
