@@ -52,11 +52,11 @@ $ npm i vue-upload-container -S
 | 属性名     | 类型    | 默认值   | 说明                       |
 |------------|---------|----------|----------------------------|
 | disabled   | Boolean | false    | 点击本组件是否有效         |
-| action     | String  | true     | 上传文件的后端服务地址     |
+| action     | String  | -        | 上传文件的后端服务地址     |
 | fileName   | String  | "file"   | 文件对象对应的表单字段名   |
 | limit      | Number  | Infinity | 同一批次上传的文件个数限制 |
-| minSize    | Number  | Number   | 文件尺寸的最小限制         |
-| maxSize    | Number  | Number   | 文件尺寸的最大限制         |
+| minSize    | Number  | 0        | 文件尺寸的最小限制         |
+| maxSize    | Number  | Infinity | 文件尺寸的最大限制         |
 | accept     | String  | -        | 可接受的文件 MIME 类型     |
 | autoUpload | Boolean | true     | 是否选好文件后就自动上传   |
 | headers    | Object  | {}       | 设置上传的请求头部         |
