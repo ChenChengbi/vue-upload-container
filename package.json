@@ -1,7 +1,7 @@
 {
   "name": "vue-upload-container",
-  "version": "0.1.8",
-  "description": "基于 Vue 的面板分割",
+  "version": "0.1.9",
+  "description": "基于 Vue 的文件上传容器",
   "keywords": [
     "vue",
     "upload",
